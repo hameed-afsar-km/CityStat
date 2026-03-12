@@ -9,6 +9,8 @@ interface StateLayerProps {
   onStateClick: (stateName: string) => void;
 }
 
+const EXTRUDE_SETTINGS = { depth: 1, bevelEnabled: false };
+
 export default function StateLayer({ geoData, selectedState, onStateClick }: StateLayerProps) {
   const [hoveredState, setHoveredState] = useState<string | null>(null);
   const [hoverPos, setHoverPos] = useState<[number, number, number] | null>(null);
@@ -72,8 +74,9 @@ export default function StateLayer({ geoData, selectedState, onStateClick }: Sta
       {states.map((state: any) => {
         const isHovered = hoveredState === state.name;
         const isSelected = selectedState === state.name;
-        const depth = isHovered ? 4 : isSelected ? 2 : 1;
-        const color = isSelected ? '#00f0ff' : isHovered ? '#3b82f6' : '#222222';
+        // Selected state is flat (depth 1), unselected hovered state is extruded (depth 4)
+        const depth = isHovered && !isSelected ? 4 : 1;
+        const color = isSelected ? '#1e3a8a' : isHovered ? '#3b82f6' : '#222222';
         
         return (
           <group key={state.name} name={state.name}>
@@ -85,8 +88,9 @@ export default function StateLayer({ geoData, selectedState, onStateClick }: Sta
                 onPointerOut={(e) => { e.stopPropagation(); setHoveredState(null); setHoverPos(null); }}
                 onClick={(e) => { e.stopPropagation(); onStateClick(state.name); }}
                 position={[0, 0, depth / 2]}
+                scale={[1, 1, depth]}
               >
-                <extrudeGeometry args={[shape, { depth, bevelEnabled: false }]} />
+                <extrudeGeometry args={[shape, EXTRUDE_SETTINGS]} />
                 <meshStandardMaterial color={color} roughness={0.7} metalness={0.3} side={THREE.DoubleSide} />
               </mesh>
             ))}

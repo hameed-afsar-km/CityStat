@@ -1,11 +1,19 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { Trophy, ArrowUp, ArrowDown, Activity } from 'lucide-react';
-import { CITIES } from './CityMarkers';
+import { Trophy } from 'lucide-react';
 import { calculateCityHealthScore } from '../utils/cityScore';
 import { getWeatherData } from '../services/weatherService';
 import { getAqiData } from '../services/aqiService';
 import { getTrafficData } from '../services/trafficService';
+
+const STATES = [
+  { name: 'Maharashtra', region: 'West India' },
+  { name: 'Karnataka', region: 'South India' },
+  { name: 'Tamil Nadu', region: 'South India' },
+  { name: 'Gujarat', region: 'West India' },
+  { name: 'Rajasthan', region: 'North India' },
+  { name: 'Sikkim', region: 'North East India' },
+];
 
 export default function Leaderboard() {
   const [scores, setScores] = useState<any[]>([]);
@@ -16,11 +24,11 @@ export default function Leaderboard() {
       setLoading(true);
       try {
         const results = await Promise.all(
-          CITIES.slice(0, 5).map(async (city) => {
+          STATES.map(async (state) => {
             const [weather, aqi, traffic] = await Promise.all([
-              getWeatherData(city.name),
-              getAqiData(city.name),
-              getTrafficData(city.name)
+              getWeatherData(state.name),
+              getAqiData(state.name),
+              getTrafficData(state.name)
             ]);
             
             const score = calculateCityHealthScore(
@@ -30,12 +38,12 @@ export default function Leaderboard() {
               weather.humidity
             );
             
-            return { ...city, score };
+            return { ...state, score };
           })
         );
         
         results.sort((a, b) => b.score - a.score);
-        setScores(results);
+        setScores(results.slice(0, 5));
       } catch (e) {
         console.error(e);
       } finally {
@@ -52,19 +60,19 @@ export default function Leaderboard() {
     <motion.div 
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="absolute bottom-6 left-6 z-40 bg-black/60 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 shadow-2xl w-80"
+      className="absolute bottom-6 left-6 z-40 bg-black/60 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 shadow-2xl w-80 pointer-events-auto"
     >
       <div className="flex items-center gap-3 mb-6">
         <div className="p-2 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-xl shadow-lg shadow-orange-500/20">
           <Trophy className="text-white h-5 w-5" />
         </div>
-        <h3 className="text-white font-bold text-lg tracking-tight">Best Cities Today</h3>
+        <h3 className="text-white font-bold text-lg tracking-tight">Best States Today</h3>
       </div>
       
       <div className="space-y-4">
-        {scores.map((city, index) => (
+        {scores.map((state, index) => (
           <div 
-            key={city.name} 
+            key={state.name} 
             className="flex items-center justify-between p-3 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors border border-white/5 group cursor-pointer"
           >
             <div className="flex items-center gap-4">
@@ -72,13 +80,13 @@ export default function Leaderboard() {
                 {index + 1}
               </span>
               <div>
-                <div className="text-white font-medium">{city.name}</div>
-                <div className="text-xs text-gray-400">{city.state}</div>
+                <div className="text-white font-medium">{state.name}</div>
+                <div className="text-xs text-gray-400">{state.region}</div>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <div className="px-3 py-1 rounded-full bg-blue-500/20 text-blue-400 font-bold text-sm border border-blue-500/20">
-                {city.score}
+                {state.score}
               </div>
             </div>
           </div>

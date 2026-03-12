@@ -7,7 +7,7 @@ import Leaderboard from '../components/Leaderboard';
 export default function Home() {
   const [geoData, setGeoData] = useState<any>(null);
   const [selectedState, setSelectedState] = useState<string | null>(null);
-  const [selectedCity, setSelectedCity] = useState<{name: string, state: string} | null>(null);
+  const [selectedCity, setSelectedCity] = useState<{ name: string, state: string } | null>(null);
 
   useEffect(() => {
     // Fetch India GeoJSON
@@ -33,28 +33,34 @@ export default function Home() {
 
   return (
     <div className="relative w-full h-screen overflow-hidden bg-black font-sans">
-      <Map3D 
-        geoData={geoData} 
-        selectedState={selectedState} 
+      <Map3D
+        geoData={geoData}
+        selectedState={selectedState}
         onStateClick={handleStateClick}
         onCityClick={handleCityClick}
       />
-      
+
       <SearchBar onSelectCity={handleSearchSelect} />
-      
+
       <Leaderboard />
-      
-      {selectedCity && (
-        <CityDashboard 
-          cityName={selectedCity.name} 
-          stateName={selectedCity.state} 
-          onClose={() => setSelectedCity(null)} 
+
+      {selectedCity ? (
+        <CityDashboard
+          cityName={selectedCity.name}
+          stateName={selectedCity.state}
+          onClose={() => setSelectedCity(null)}
         />
-      )}
-      
+      ) : selectedState ? (
+        <CityDashboard
+          cityName={selectedState}
+          stateName="India Dashboard"
+          onClose={() => setSelectedState(null)}
+        />
+      ) : null}
+
       {/* Overlay info */}
       <div className="absolute bottom-6 right-6 z-40 text-right pointer-events-none">
-        <h1 className="text-4xl font-black text-white tracking-tighter mix-blend-difference">CityPulse</h1>
+        <h1 className="text-4xl font-black text-white tracking-tighter mix-blend-difference">CityStat</h1>
         <p className="text-blue-400 font-medium tracking-widest text-sm uppercase mt-1">Real-Time Intelligence</p>
       </div>
     </div>

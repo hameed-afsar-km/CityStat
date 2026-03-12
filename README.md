@@ -1,20 +1,63 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 🗺️ CityStat | 3D Geo-Intelligence Dashboard 🏙️
 
-# Run and deploy your AI Studio app
+![CityStat Banner](https://img.shields.io/badge/CityStat-Geo_Intelligence-00C1D4?style=for-the-badge&logo=google-maps&logoColor=white)
+![Three.js](https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=three.dot.js&logoColor=white)
+![GeoJSON](https://img.shields.io/badge/GeoJSON-FFD600?style=for-the-badge&logo=json&logoColor=black)
 
-This contains everything you need to run your app locally.
+**CityStat** (CityPulse) is a high-performance 3D spatial visualization tool that extrudes geographic boundaries into interactive data-scrapers. It allows urban planners and developers to visualize state and city-level metrics in a tactile, cinematic environment.
 
-View your app in AI Studio: https://ai.studio/apps/cb658bab-52d0-4557-a25e-2305a85bc4d1
+---
 
-## Run Locally
+## 💎 Features
 
-**Prerequisites:**  Node.js
+- **🧱 Dynamic Map Extrusion**: Real-time extrusion of GeoJSON polygons into 3D meshes with custom depth.
+- **📍 Smart City Markers**: Interactive pins that surface population, literacy, and area data.
+- **🔍 State Drill-Down**: Bounds-fitting camera logic that focuses precisely on the selected region.
+- **📈 Intelligence Dashboard**: Side-panel housing real-time metrics and growth charts.
+- **🏢 Leaderboard**: Competitive ranking of cities based on urban infrastructure metrics.
 
+---
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## 📂 Project Structure
+
+```text
+CityStat/
+├── src/
+│   ├── components/
+│   │   ├── Map3D.tsx        # Fiber Canvas & Orbit Controls
+│   │   ├── StateLayer.tsx   # Polygon-to-Mesh extrusion logic
+│   │   └── CityMarkers.tsx  # Dynamic pin placement
+│   ├── pages/
+│   │   └── Home.tsx         # Main entry with GeoJSON fetching
+│   ├── utils/
+│   │   └── geoUtils.ts      # Coordinate projection helpers
+│   └── assets/              # Static SVG and Map data
+└── tailwind.config.js
+```
+
+---
+
+## 🚦 Installation
+
+1. Clone and install:
+   ```bash
+   npm install
+   ```
+
+2. Launch the dashboard:
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## 🛠️ Technical Deep-Dive
+
+- **SVG Path to Shape**: Uses the `getProjectedPoints` utility to transform raw latitude/longitude into Cartesian coordinates for the Three.js `ExtrudeGeometry`.
+- **Bounds Animation**: Utilizes the `@react-three/drei` `Bounds` component to compute centering and zoom-fit logic for complex polygons.
+- **Mix-Blend Typography**: Employs CSS mix-blend-mode for titles to maintain contrast across dark mesh backgrounds.
+
+---
+
+## 📄 License
+MIT © 2026 CityStat Intelligence

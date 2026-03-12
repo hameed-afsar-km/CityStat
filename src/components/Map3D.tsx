@@ -66,7 +66,7 @@ export default function Map3D({ geoData, selectedState, onStateClick, onCityClic
         </Bounds>
         
         <OrbitControls 
-          enableRotate={false} 
+          enableRotate={true} 
           enablePan={true} 
           enableZoom={true} 
           minDistance={10} 
