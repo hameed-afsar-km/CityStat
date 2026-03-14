@@ -76,7 +76,18 @@ export default function StateLayer({ geoData, selectedState, onStateClick }: Sta
         const isSelected = selectedState === state.name;
         // Selected state is flat (depth 1), unselected hovered state is extruded (depth 4)
         const depth = isHovered && !isSelected ? 4 : 1;
-        const color = isSelected ? '#1e3a8a' : isHovered ? '#3b82f6' : '#222222';
+        
+        let uniqueColor = '#3b82f6';
+        if (state.name) {
+          let hash = 0;
+          for (let i = 0; i < state.name.length; i++) {
+            hash = state.name.charCodeAt(i) + ((hash << 5) - hash);
+          }
+          const hue = Math.abs(hash % 360);
+          uniqueColor = `hsl(${hue}, 80%, 50%)`;
+        }
+        
+        const color = isSelected ? '#ffffff' : isHovered ? uniqueColor : '#222222';
         
         return (
           <group key={state.name} name={state.name}>

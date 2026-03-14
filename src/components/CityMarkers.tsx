@@ -3,50 +3,28 @@ import * as THREE from 'three';
 import { Html } from '@react-three/drei';
 import { getCityPosition } from '../utils/geoUtils';
 
-const LOCATIONS = [
-  // Maharashtra
-  { name: 'Mumbai', state: 'Maharashtra', lat: 19.0760, lng: 72.8777, pop: 20411000, type: 'City', metric: 'AQI: 120 | Temp: 32°C' },
-  { name: 'Pune', state: 'Maharashtra', lat: 18.5204, lng: 73.8567, pop: 6629000, type: 'City', metric: 'AQI: 95 | Temp: 28°C' },
-  { name: 'Lonavala', state: 'Maharashtra', lat: 18.7481, lng: 73.4071, pop: 57698, type: 'Town', metric: 'AQI: 40 | Temp: 24°C' },
-  { name: 'Khandala', state: 'Maharashtra', lat: 18.7554, lng: 73.3753, pop: 12400, type: 'Village', metric: 'AQI: 35 | Temp: 22°C' },
-  // Delhi NCT
-  { name: 'New Delhi', state: 'NCT of Delhi', lat: 28.6139, lng: 77.2090, pop: 30291000, type: 'City', metric: 'AQI: 310 | Temp: 38°C' },
-  { name: 'Najafgarh', state: 'NCT of Delhi', lat: 28.6090, lng: 76.9798, pop: 1365000, type: 'Town', metric: 'AQI: 280 | Temp: 36°C' },
-  // Karnataka
-  { name: 'Bangalore', state: 'Karnataka', lat: 12.9716, lng: 77.5946, pop: 12327000, type: 'City', metric: 'AQI: 90 | Temp: 26°C' },
-  { name: 'Mysuru', state: 'Karnataka', lat: 12.2958, lng: 76.6394, pop: 1199000, type: 'City', metric: 'AQI: 65 | Temp: 28°C' },
-  { name: 'Hampi', state: 'Karnataka', lat: 15.3350, lng: 76.4600, pop: 2800, type: 'Village', metric: 'AQI: 45 | Temp: 34°C' },
-  // Tamil Nadu
-  { name: 'Chennai', state: 'Tamil Nadu', lat: 13.0827, lng: 80.2707, pop: 10971000, type: 'City', metric: 'AQI: 110 | Temp: 35°C' },
-  { name: 'Ooty', state: 'Tamil Nadu', lat: 11.4100, lng: 76.6950, pop: 88400, type: 'Town', metric: 'AQI: 30 | Temp: 19°C' },
-  // West Bengal
-  { name: 'Kolkata', state: 'West Bengal', lat: 22.5726, lng: 88.3639, pop: 14850000, type: 'City', metric: 'AQI: 160 | Temp: 33°C' },
-  { name: 'Darjeeling', state: 'West Bengal', lat: 27.0360, lng: 88.2627, pop: 132000, type: 'Town', metric: 'AQI: 40 | Temp: 14°C' },
-  // Telangana
-  { name: 'Hyderabad', state: 'Telangana', lat: 17.3850, lng: 78.4867, pop: 10004000, type: 'City', metric: 'AQI: 85 | Temp: 31°C' },
-  // Gujarat
-  { name: 'Ahmedabad', state: 'Gujarat', lat: 23.0225, lng: 72.5714, pop: 8253000, type: 'City', metric: 'AQI: 155 | Temp: 40°C' },
-  { name: 'Surat', state: 'Gujarat', lat: 21.1702, lng: 72.8311, pop: 6936000, type: 'City', metric: 'AQI: 130 | Temp: 36°C' },
-  { name: 'Dhordo', state: 'Gujarat', lat: 23.8222, lng: 69.5601, pop: 850, type: 'Village', metric: 'AQI: 80 | Temp: 42°C' },
-  // Rajasthan
-  { name: 'Jaipur', state: 'Rajasthan', lat: 26.9124, lng: 75.7873, pop: 3910000, type: 'City', metric: 'AQI: 140 | Temp: 39°C' },
-  { name: 'Kuldhara', state: 'Rajasthan', lat: 26.8741, lng: 70.7852, pop: 0, type: 'Village', metric: 'AQI: 60 | Temp: 45°C' },
-  // Sikkim
-  { name: 'Gangtok', state: 'Sikkim', lat: 27.3389, lng: 88.6065, pop: 100000, type: 'City', metric: 'AQI: 35 | Temp: 16°C' },
-  { name: 'Lachen', state: 'Sikkim', lat: 27.7167, lng: 88.5500, pop: 1000, type: 'Village', metric: 'AQI: 15 | Temp: 8°C' },
-];
+import { CITIES_DATA } from '../data/citiesData';
+
+const LOCATIONS = CITIES_DATA;
 
 interface CityMarkersProps {
   selectedState: string;
+  selectedDistrict?: string | null;
   onCityClick: (cityName: string) => void;
 }
 
-export default function CityMarkers({ selectedState, onCityClick }: CityMarkersProps) {
+export default function CityMarkers({ selectedState, selectedDistrict, onCityClick }: CityMarkersProps) {
   const [hoveredLocation, setHoveredLocation] = useState<string | null>(null);
 
   const stateLocations = useMemo(() => {
-    return LOCATIONS.filter(l => l.state === selectedState);
-  }, [selectedState]);
+    let locs = LOCATIONS.filter(l => l.state === selectedState);
+    if (selectedDistrict) {
+      const districtLocs = locs.filter(l => l.district === selectedDistrict);
+      // Fallback to all state locations if district has no matches
+      locs = districtLocs.length > 0 ? districtLocs : locs;
+    }
+    return locs;
+  }, [selectedState, selectedDistrict]);
 
   const getBaseRadius = (type: string) => {
     if (type === 'City') return 1.2;
